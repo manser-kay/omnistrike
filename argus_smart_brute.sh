@@ -1,4 +1,6 @@
 #!/bin/bash
+source ~/argus_logger.sh 2>/dev/null
+set -e
 TARGET=$1
 [ -z "$TARGET" ] && echo "Usage: $0 http://target.com" && exit 1
 
