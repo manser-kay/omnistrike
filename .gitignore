@@ -1,0 +1,11 @@
+# Конфиденциально
+*.conf
+*.token
+*.key
+gh_token
+
+# Локальные данные
+shadow_loot/
+shadow_scan_*/
+shadow_logs/
+.cookie_jar.json
