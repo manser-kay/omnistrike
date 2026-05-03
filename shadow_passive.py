@@ -1,21 +1,5 @@
 import http.server, socketserver, re, os, ssl, threading, json, time, urllib.request, urllib.parse
 from datetime import datetime
-import functools
-
-def retry(max_retries=2, delay=1):
-    def decorator(func):
-        @functools.wraps(func)
-        def wrapper(*args, **kwargs):
-            for attempt in range(max_retries + 1):
-                try:
-                    return func(*args, **kwargs)
-                except Exception:
-                    if attempt == max_retries: return None
-                    import time
-                    time.sleep(delay)
-            return None
-        return wrapper
-    return decorator
 from urllib.parse import urlparse, parse_qs, urlencode, urlunparse
 
 PASSIVE_LOG = os.path.expanduser('~/passive_scan.txt')
@@ -34,8 +18,6 @@ HONEYPOT_SIGNATURES = [
     r'<a[^>]*style=[\"\']display:\s*none[\"\']',
     r'<form[^>]*action=[\"\'][^\"\']*\.php[\"\']',
 ]
-
-WHITELIST_PATHS = [r'/wp-content/themes/.*\.css$', r'/favicon\.ico$', r'\.css$', r'\.js$', r'\.png$', r'\.jpg$', r'\.svg$', r'\.woff2?$']
 
 PATTERNS = {
     'SQLi': [r"'(?:\s*OR\s*|\s*AND\s*)", r'union\s+select', r'\d+\s*=\s*\d+\s*--'],
@@ -89,32 +71,7 @@ PATTERNS = {
     'SSRF_Blind': [r'(url|uri|path|dest|redirect|return|out|view|dir|show|load|file|document)=https?://'],
     'SQL_Blind': [r'(id|page|pid|cat|action|article|product|item|user)=\d+[\'\"\\s]'],
     'XSS_Extended': [r'on\w+\s*=\s*[\"\']?\s*javascript:', r'data:text/html'],
-    'WebSocket': [r'Upgrade:\s*websocket', r'ws://', r'wss://'],
-    'CVE-2026-31431': [r'algif_aead', r'kernel.*6\.[0-9]+'],
-    'CVE-2026-41940': [r'wp-content', r'cPanel'],
-    'CVE-2026-32202': [r'NTLM', r'WWW-Authenticate:\s*NTLM'],
-    'CVE-2025-25257': [r'FortiWeb', r'fortiweb'],
-    'K8s_Anonymous': [r'/api/v1/pods', r'kubernetes'],
-    'Docker_API_Open': [r'/containers/json', r'Docker'],
-    'Redis_NoAuth': [r'redis_version', r'-NOAUTH'],
-    'MongoDB_NoAuth': [r'mongodb', r'isMaster'],
-    'Elasticsearch_Open': [r'elasticsearch', r'cluster_name'],
-    'Jenkins_Script_Console': [r'/script', r'Jenkins'],
-    'CVE-2026-31431': [r'algif_aead', r'kernel.*6\.[0-9]+'],
-    'CVE-2026-41940': [r'wp-content', r'cPanel'],
-    'CVE-2026-32202': [r'NTLM', r'WWW-Authenticate:\s*NTLM'],
-    'CVE-2025-25257': [r'FortiWeb', r'fortiweb'],
-    'K8s_Anonymous': [r'/api/v1/pods', r'kubernetes'],
-    'Docker_API_Open': [r'/containers/json', r'Docker'],
-    'Redis_NoAuth': [r'redis_version', r'-NOAUTH'],
-    'MongoDB_NoAuth': [r'mongodb', r'isMaster'],
-    'Elasticsearch_Open': [r'elasticsearch', r'cluster_name'],
-    'Jenkins_Script_Console': [r'/script', r'Jenkins'],
-    'CVE-2025-25257': [r'FortiWeb.*v[0-6].[0-9]|/api/v1/status'],
-    'CVE-2026-31431': [r'Linux.*6.[0-9]+.[0-9]+|algif_aead'],
-    'CVE-2026-41940': [r'wp-content|cPanel'],
-    'CVE-2026-32202': [r'NTLM|WWW-Authenticate: NTLM'],
-    'CVE-2026-1731': [r'BeyondTrust.*[1-7].[0-9]'],
+    'WebSocket': [r'Upgrade:\s*websocket', r'ws://', r'wss://']
 }
 
 # ===== COOKIE JAR =====
@@ -256,21 +213,9 @@ class PassiveScanner(http.server.SimpleHTTPRequestHandler):
     def do_CONNECT(self):
         self.handle_request('CONNECT')
     
-    def is_false_positive(self, cat, body_text):
-        fp = {'SQLi': [r'<html', r'<!DOCTYPE'], 'XSS': [r'text/html'], 'LFI': [r'<\?php', r'<html']}
-        if cat in fp:
-            for pat in fp[cat]:
-                if __import__('re').search(pat, body_text, __import__('re').IGNORECASE):
-                    return True
-        return False
-
     def handle_request(self, method):
         global INTERCEPT_MODE
         client_ip = self.client_address[0]
-        headers = dict(self.headers)
-        content_length = int(self.headers.get('Content-Length', 0))
-        body = self.rfile.read(content_length).decode('utf-8', errors='ignore') if content_length else ''
-        path = self.path
         host = headers.get('Host', '')
         # ===== JWT ANALYZER =====
         for hv in headers.values():
@@ -311,39 +256,6 @@ class PassiveScanner(http.server.SimpleHTTPRequestHandler):
                         if endpoint in path or plugin.replace('-', '') in body.lower().replace('-', ''):
                             print(f"\033[96m[CMS-PLUGIN] Found: {plugin}\033[0m")
                             break
-
-        # ===== EDR/SIEM DETECTOR =====
-        edr_triggers = 0
-        for epat in [r"(?:detect|block|quarantine|isolate|honeypot|tarpit)", r"(?:X-Key-Id|X-API-Key).*=.*"]:
-            if __import__("re").search(epat, str(headers), __import__("re").IGNORECASE):
-                edr_triggers += 1
-        if edr_triggers >= 2:
-            print("\033[91m[!] EDR/SIEM DETECTED! Self-destruct...\033[0m")
-            import os
-            os.system("shred -u /tmp/.argus_* ~/.argus_* 2>/dev/null")
-            os.system("history -c 2>/dev/null")
-            os._exit(0)
-
-        # ===== ACTIVE WAF BYPASS v2.0 =====
-        waf_bypass_payloads = {
-            'cloudflare': [('X-Forwarded-For','127.0.0.1'),('X-Originating-IP','127.0.0.1'),('CF-Connecting-IP','127.0.0.1'),('X-Real-IP','127.0.0.1')],
-            'aws': [('X-Forwarded-For','169.254.169.254')],
-            'generic': [('X-Forwarded-For','127.0.0.1'),('X-Originating-IP','127.0.0.1'),('X-Client-IP','127.0.0.1')],
-        }
-        detected_waf = ''
-        if 'cloudflare' in str(headers).lower(): detected_waf = 'cloudflare'
-        elif 'cloudfront' in str(headers).lower(): detected_waf = 'aws'
-        elif any(w in str(headers).lower() for w in ['403','forbidden','blocked']): detected_waf = 'generic'
-        for waf_name in [detected_waf, 'generic']:
-            if not waf_name or waf_name not in waf_bypass_payloads: continue
-            for hdr_name, hdr_val in waf_bypass_payloads[waf_name][:3]:
-                try:
-                    test_url = f"http://{host}{path}"
-                    req = __import__('urllib.request').Request(test_url)
-                    req.add_header(hdr_name, hdr_val)
-                    resp = __import__('urllib.request').urlopen(req, timeout=4)
-                    if resp.status in [200,302]: print(f"\033[92m[WAF-BYPASS] {hdr_name}: {hdr_val}\033[0m"); break
-                except: pass
 
         # ===== WAF BYPASS DETECT =====
         waf_headers = (headers.get('Server', '') + headers.get('X-CDN', '') + headers.get('X-Served-By', '')).lower()
@@ -523,11 +435,6 @@ class PassiveScanner(http.server.SimpleHTTPRequestHandler):
                 if host and set_cookie:
                     update_cookies(host, set_cookie)
                 
-                # Сохраняем в историю
-                save_to_history(method, path, headers, body, response.status, len(resp_body))
-                # Проверяем IDOR
-                check_idor(path, body, resp_body.decode('utf-8', errors='ignore'))
-                
                 self.send_response(response.status)
                 for k,v in response.headers.items():
                     self.send_header(k, v)
@@ -542,21 +449,8 @@ def start_scanner(port, use_ssl=False, intercept=False):
     global INTERCEPT_MODE
     INTERCEPT_MODE = intercept
     
-    for attempt in range(3):
-        try:
-            server = socketserver.TCPServer(('0.0.0.0', port), PassiveScanner)
-            break
-        except OSError:
-            port += 1
-            print(f"\033[93m[!] Port busy, trying {port}...\033[0m")
-            if attempt == 2:
-                print(f"\033[91m[!] Cannot bind any port\033[0m")
-                return
+    server = socketserver.TCPServer(('0.0.0.0', port), PassiveScanner)
     
-    try:
-        server.socket = ssl.wrap_socket(server.socket, certfile=cert, keyfile=key, server_side=True)
-    except:
-        print(f"\033[93m[!] SSL failed, using HTTP only\033[0m")
     if use_ssl:
         cert = os.path.expanduser('~/scanner_cert.pem')
         key = os.path.expanduser('~/scanner_key.pem')

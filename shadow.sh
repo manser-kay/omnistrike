@@ -8,7 +8,7 @@
 #   ALL v36.0 features + 2 MAJOR UPGRADES
 #   NOTHING DELETED - FULL CODE
 # =============================================
-source /data/data/com.termux/files/home/argus.conf 2>/dev/null
+source /data/data/com.termux/files/home/shadow.conf 2>/dev/null
 
 RED='\033[0;31m'; GREEN='\033[0;32m'; YELLOW='\033[1;33m'
 BLUE='\033[0;34m'; PURPLE='\033[0;35m'; CYAN='\033[0;36m'
@@ -701,11 +701,11 @@ social_osint() {
 # Agentic + Supply Chain (Будущее)
 echo -e "\n${CYAN}[*] API Auto-Detect...${NC}"
 ${CYAN}[*] Agentic Workflow...${NC}"
-[ -x ~/argus_agentic.sh ] && ~/argus_agentic.sh "$TARGET" &
+[ -x ~/shadow_agentic.sh ] && ~/shadow_agentic.sh "$TARGET" &
 
 echo -e "\n${CYAN}[*] API Auto-Detect...${NC}"
 ${CYAN}[*] Supply Chain Hunter...${NC}"
-[ -x ~/argus_supply_chain.sh ] && ~/argus_supply_chain.sh "$TARGET" &
+[ -x ~/shadow_supply_chain.sh ] && ~/shadow_supply_chain.sh "$TARGET" &
 
 wait
 osint_collect() {
@@ -900,12 +900,12 @@ start_passive_scanner() {
         openssl req -x509 -newkey rsa:2048 -keyout ~/scanner_key.pem -out ~/scanner_cert.pem -days 365 -nodes -subj "/CN=SuperScanner CA" 2>/dev/null
     fi
     
-    cat > /data/data/com.termux/files/home/argus_argus_passive.py << 'PYEOF'
+    cat > /data/data/com.termux/files/home/shadow_shadow_passive.py << 'PYEOF'
 import http.server, socketserver, re, os, ssl, threading, json, time, urllib.request, urllib.parse
 from datetime import datetime
 from urllib.parse import urlparse, parse_qs, urlencode, urlunparse
 
-PASSIVE_LOG = os.path.expanduser('~/argus_scan.txt')
+PASSIVE_LOG = os.path.expanduser('~/shadow_scan.txt')
 REPEATER_LOG = os.path.expanduser('~/repeater_log.txt')
 WS_LOG = os.path.expanduser('~/websocket_log.txt')
 COOKIE_JAR_FILE = os.path.expanduser('~/.cookie_jar.json')
@@ -1240,7 +1240,7 @@ def start_scanner(port, use_ssl=False, intercept=False):
     mode = "INTERCEPT" if intercept else "PASSIVE"
     print(f"\033[92m[+] Passive Scanner + Repeater + Stealth Ops+ ({protocol}) on port {port} [{mode}]\033[0m")
     print(f"\033[93m[*] Proxy: 127.0.0.1:{port}\033[0m")
-    print(f"\033[93m[*] Logs: ~/argus_scan.txt | ~/repeater_log.txt | ~/websocket_log.txt\033[0m")
+    print(f"\033[93m[*] Logs: ~/shadow_scan.txt | ~/repeater_log.txt | ~/websocket_log.txt\033[0m")
     print(f"\033[93m[*] Cookie Jar: ~/.cookie_jar.json\033[0m")
     print(f"\033[93m[*] Intruder wordlists: ~/intruder_wordlists/\033[0m")
     print(f"\033[93m[*] Intercept: send SIGUSR1 or restart with --intercept\033[0m")
@@ -1257,9 +1257,9 @@ if __name__ == '__main__':
     intercept = '--intercept' in sys.argv
     start_scanner(port, use_ssl, intercept)
 PYEOF
-    python /data/data/com.termux/files/home/argus_argus_passive.py 9990 &
+    python /data/data/com.termux/files/home/shadow_shadow_passive.py 9990 &
     PASSIVE_PID=$!
-    python /data/data/com.termux/files/home/argus_argus_passive.py 9443 --ssl &
+    python /data/data/com.termux/files/home/shadow_shadow_passive.py 9443 --ssl &
     PASSIVE_SSL_PID=$!
 }
 
@@ -1437,7 +1437,7 @@ translate() {
 
 disguise_traffic() { echo "<!-- $(custom_b64_encode "$1") -->"; }
 
-CONFIG_FILE="$HOME/argus.conf"; CONFIG_LAST_MODIFIED=0
+CONFIG_FILE="$HOME/shadow.conf"; CONFIG_LAST_MODIFIED=0
 hot_reload_config() {
     [ -f "$CONFIG_FILE" ] && { local cm=$(stat -c %Y "$CONFIG_FILE" 2>/dev/null || echo 0); [ "$cm" -gt "$CONFIG_LAST_MODIFIED" ] && { source "$CONFIG_FILE" 2>/dev/null; CONFIG_LAST_MODIFIED=$cm; }; }
 }
@@ -1445,7 +1445,7 @@ hot_reload_config() {
 STEALTH_PATHS=("/api/news" "/api/status" "/api/v1/data" "/cdn/static" "/assets/js" "/img/logo" "/favicon.ico" "/robots.txt" "/sitemap.xml")
 random_stealth_path() { echo "${STEALTH_PATHS[$((RANDOM % ${#STEALTH_PATHS[@]}))]}"; }
 
-PLUGIN_DIR="$HOME/argus_plugins"; mkdir -p "$PLUGIN_DIR"
+PLUGIN_DIR="$HOME/shadow_plugins"; mkdir -p "$PLUGIN_DIR"
 run_plugins() { local stage=$1; [ -d "$PLUGIN_DIR" ] && for plugin in "$PLUGIN_DIR"/*.sh; do [ -f "$plugin" ] && [ -x "$plugin" ] && bash "$plugin" "$TARGET" "$REPORT" 2>/dev/null; done; }
 
 # ===== MAIN MENU =====
@@ -1456,7 +1456,7 @@ banner() {
 echo -e "\n${CYAN}[*] Cleaning up...${NC}"
 rm -f /tmp/passlist.txt /tmp/pass_chunk_* /tmp/gql_payloads.txt /tmp/rockyou_dl.txt /tmp/ua_list.txt 2>/dev/null
 rm -f /tmp/ai_suggestions.txt /tmp/cover_*.jpg /tmp/stego_*.jpg 2>/dev/null
-find /tmp -name ".argus_*" -mtime +1 -delete 2>/dev/null
+find /tmp -name ".shadow_*" -mtime +1 -delete 2>/dev/null
 echo -e "${GREEN}[+] Временные файлы удалены${NC}"
 echo ""
     echo "╔══════════════════════════════════════════════╗"
@@ -1555,7 +1555,7 @@ health_check
 
 # === LIVE CVE CHECK (2025-2026) ===
 echo -e "\n${CYAN}[*] Live CVE Check (2025-2026)...${NC}"
-[ -x ~/argus_live_cve.sh ] && ~/argus_live_cve.sh "$TARGET" &
+[ -x ~/shadow_live_cve.sh ] && ~/shadow_live_cve.sh "$TARGET" &
 CVE_PID=$!
 
 TOR_ACTIVE=false
@@ -1705,9 +1705,9 @@ graphql_injection; websocket_injection
 # === РАСШИРЕННЫЕ ИНЪЕКЦИИ (v48.0) ===
 echo -e "\n${CYAN}[*] API Auto-Detect...${NC}"
 ${CYAN}[13/24] Advanced Injections...${NC}"
-[ -x ~/argus_advanced_sqli.sh ] && ~/argus_advanced_sqli.sh "$TARGET" &
-[ -x ~/argus_advanced_xss.sh ] && ~/argus_advanced_xss.sh "$TARGET" &
-[ -x ~/argus_advanced_injections.sh ] && ~/argus_advanced_injections.sh "$TARGET" &
+[ -x ~/shadow_advanced_sqli.sh ] && ~/shadow_advanced_sqli.sh "$TARGET" &
+[ -x ~/shadow_advanced_xss.sh ] && ~/shadow_advanced_xss.sh "$TARGET" &
+[ -x ~/shadow_advanced_injections.sh ] && ~/shadow_advanced_injections.sh "$TARGET" &
 wait
 
 cve_exploit_scan
@@ -1724,7 +1724,7 @@ run_plugins "post_scan"
 
 # Chained Exploit Linker
 echo -e "\n${CYAN}[*] API Auto-Detect...${NC}"\n${CYAN}[21/24] Chain Linker...${NC}"
-[ -x ~/argus_chain_linker.sh ] && ~/argus_chain_linker.sh "$REPORT"
+[ -x ~/shadow_chain_linker.sh ] && ~/shadow_chain_linker.sh "$REPORT"
 
 echo -e "\n${CYAN}[*] API Auto-Detect...${NC}"\n${PURPLE}[23/24] Reports...${NC}"
 HTML_FILE=$(generate_html_report)

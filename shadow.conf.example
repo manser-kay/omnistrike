@@ -1,0 +1,29 @@
+# =============================================
+#   SUPER SCANNER v30.0 - CONFIGURATION
+#   Обновляй только этот файл
+# =============================================
+
+# Telegram Bot Settings
+TELEGRAM_BOT_TOKEN="8629171082:AAGHGDO3P8Ygp0lJJSMcnSU8JFCGvT_JM54"
+TELEGRAM_CHAT_ID="6561348375"
+
+# Language: ru (Русский) / en (English) / zh (中文)
+export LANG=ru
+
+# Chain Builder Settings
+CHAIN_DRY_RUN=false        # true = только план, без реальной атаки
+MAX_CHAIN_STEPS=5          # максимум шагов в цепочке
+
+# Dead Man's Switch (секунды)
+DEAD_MAN_TIMEOUT=86400     # 24 часа (86400 секунд)
+
+# Пути к базам данных
+CVE_DB_DIR="$HOME/cve_full"
+EXPLOIT_DB_DIR="$HOME/exploitdb"
+
+# Proxy List (раскомментируй и добавь свои)
+# socks5://IP:PORT
+# socks5://IP:PORT
+
+# Whitelist для Chain Builder (домены через пробел)
+CHAIN_WHITELIST_DOMAINS="demo.testfire.net testphp.vulnweb.com 127.0.0.1 localhost"
