@@ -1,1 +1,0 @@
-http://zero.webappsecurity.com/search.html?searchTerm=TlZj (GET)  # /data/data/com.termux/files/usr/bin/sqlmap -u http://zero.webappsecurity.com --batch --random-agent --forms --crawl=3 --level=2 --risk=2 --timeout=10 --retries=1 --dbs --tables --dump --output-dir=scan_20260503_095604/sqlmap

@@ -1,1 +1,0 @@
-# Nmap 7.99 scan initiated Sun May  3 10:03:32 2026 as: nmap -T4 --top-ports 100 -sV -oN scan_20260503_100332/nmap.txt zero.webappsecurity.com

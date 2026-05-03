@@ -1,5 +1,0 @@
-http://zero.webappsecurity.com:80/
-http://zero.webappsecurity.com:80/%22
-http://zero.webappsecurity.com:80/%20
-http://zero.webappsecurity.com:80/%20robots.txt
-http://zero.webappsecurity.com/%C2%A0l

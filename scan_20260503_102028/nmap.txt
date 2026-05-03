@@ -1,3 +1,0 @@
-# Nmap 7.99 scan initiated Sun May  3 10:20:31 2026 as: nmap -T4 --top-ports 100 -sV -oN scan_20260503_102028/nmap.txt zero.webappsecurity.com
-Strange SO_ERROR from connection to 54.82.22.214 (103 - 'Software caused connection abort') -- bailing scan
-QUITTING!

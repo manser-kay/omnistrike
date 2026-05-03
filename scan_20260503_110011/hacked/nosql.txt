@@ -1,6 +1,0 @@
-NoSQL: gt
-NoSQL: ne
-NoSQL: where
-NoSQL: gt
-NoSQL: ne
-NoSQL: where

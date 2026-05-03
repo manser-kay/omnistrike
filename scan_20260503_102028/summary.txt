@@ -1,9 +1,0 @@
-ShadowStrike v56.1 Report
-Target: http://zero.webappsecurity.com
-Date: Sun May  3 10:25:34 MSK 2026
-Open ports: 0
-0
-Directories: 1
-SQLi: NO
-XSS: NO
-Nuclei: 0
