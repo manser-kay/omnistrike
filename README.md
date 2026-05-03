@@ -1,30 +1,51 @@
 # ShadowStrike — Hacker's Swiss Army Knife
 
-**82 модуля | Android/Linux/macOS | Бесплатно | Открытый код**
+**82 модуля | Android/Linux/macOS | Бесплатно**
 
-Инструмент создан хакером для хакеров. Не для compliance, не для отчётов руководству. Для реальной работы.
+## 🚀 Быстрый старт
 
-## Что внутри
-- Разведка — пассивный сканер, OSINT, subdomain finder
-- Атака — 12 типов инъекций, SQLMap, брутфорс, обход WAF
-- C2 — свой командный центр (HTTPS/DNS/TCP/WS/Tor)
-- Post-exploit — эскалация, закрепление, сбор артефактов, заметание следов
-- Скрытность — Process Hollowing, маскировка под легитимные процессы
-
-## Установка
-git clone https://github.com/manser-kay/argus-bash
-cd argus-bash && chmod +x shadow.sh
+git clone https://github.com/manser-kay/shadowstrike
+cd shadowstrike
+chmod +x shadow.sh
 ./shadow check
-./shadow scan http://target.com
+./shadow scan http://testphp.vulnweb.com
 
-## Для кого
-- Пентестеры — автоматизация рутины
-- Red Team — свой инструмент которого нет у цели
-- Баг-баунти — быстрый поиск уязвимостей
-- CTF — универсальный инструмент для соревнований
+## ⚡ Основные команды
 
-## Ответственность
-Автор не несёт ответственности за ваши действия. Вы сами решаете как использовать этот инструмент.
+./shadow scan <url>         Полный скан (порты + SQLi + XSS + Nuclei)
+./shadow quick <url>        Быстрый скан (5 минут)
+./shadow passive            Пассивный сбор (прокси 127.0.0.1:9990)
+./shadow c2 <port>          Поднять C2 сервер
+./shadow console            Боевая консоль
 
-## Лицензия
+## 📁 Что в папке
+
+shadow.sh               Ядро
+shadow_passive.py        Пассивный сканер
+shadow_c2_server.py      C2 сервер
+shadow_c2_agent.sh       C2 агент
+smart_brute.sh           Умный брутфорс
+waf_detect.sh            Детектор WAF
+quick_loot.sh            Поиск сокровищ
+subfinder.sh             Поиск поддоменов
+portscan.sh              Скан портов
+header_audit.sh          Аудит заголовков
+stealer.sh               Аудитор утечек данных
+
+## 💡 Примеры
+
+./smart_brute.sh http://target.com          Сгенерировать пароли
+./waf_detect.sh http://target.com           Проверить WAF
+./quick_loot.sh http://target.com           Быстрый поиск .env/.git
+./subfinder.sh target.com                   Найти поддомены
+./portscan.sh target.com                    Скан топ-20 портов
+./header_audit.sh http://target.com         Аудит заголовков безопасности
+./stealer.sh                                Аудит утечек данных
+
+## ⚠️ Ответственность
+
+Автор не несёт ответственности. Ты сам решаешь что делать.
+
+## 📜 Лицензия
+
 MIT
