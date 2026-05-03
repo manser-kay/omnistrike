@@ -1,48 +1,30 @@
-# ShadowStrike v56.1 — Red Team Framework
+# ShadowStrike — Hacker's Swiss Army Knife
 
-**26 файлов | 0 ошибок синтаксиса | Открытый исходный код**
+**82 модуля | Android/Linux/macOS | Бесплатно | Открытый код**
 
-ShadowStrike — автономный Red Team фреймворк, прошедший путь от простого bash-скрипта до профессионального инструмента.
+Инструмент создан хакером для хакеров. Не для compliance, не для отчётов руководству. Для реальной работы.
 
 ## Что внутри
+- Разведка — пассивный сканер, OSINT, subdomain finder
+- Атака — 12 типов инъекций, SQLMap, брутфорс, обход WAF
+- C2 — свой командный центр (HTTPS/DNS/TCP/WS/Tor)
+- Post-exploit — эскалация, закрепление, сбор артефактов, заметание следов
+- Скрытность — Process Hollowing, маскировка под легитимные процессы
 
-### Ядро
-- `shadow.sh` — основной фреймворк
-- `shadow_passive.py` — пассивный сканер
-- `shadow_c2_server.py` + `shadow_c2_agent.sh` — C2 сервер и агент
-- `shadow_console.sh` — боевая консоль
-- `shadow_check.sh` — проверка готовности
-
-### Атака
-- `shadow_supervisor.sh` — диспетчер атак
-- `shadow_autopwn.sh` — цепочки эксплуатации
-- `shadow_lootrun.sh` — быстрый поиск сокровищ
-
-### Post-exploit
-- `shadow_escalate.sh` — эскалация привилегий
-- `shadow_persistence.sh` — закрепление
-- `shadow_spider.sh` — расползание по сети
-- `shadow_harvester.sh` — сбор артефактов
-- `shadow_cleaner.sh` — заметание следов
-- `shadow_jammer.sh` — дымовая завеса
-- `shadow_stealth.sh` — режим невидимки
-
-### Утилиты
-- `smart_brute.sh` — контекстный брутфорс
-- `waf_detect.sh` — определение WAF
-- `quick_loot.sh` — быстрый поиск сокровищ
-- `subfinder.sh` — поиск поддоменов
-- `portscan.sh` — скан портов
-
-## Быстрый старт
+## Установка
 git clone https://github.com/manser-kay/argus-bash
-cd argus-bash
-chmod +x shadow.sh
+cd argus-bash && chmod +x shadow.sh
 ./shadow check
-./shadow scan http://testphp.vulnweb.com
+./shadow scan http://target.com
 
-## Автор
-Автор не несёт ответственности за использование данного программного обеспечения.
+## Для кого
+- Пентестеры — автоматизация рутины
+- Red Team — свой инструмент которого нет у цели
+- Баг-баунти — быстрый поиск уязвимостей
+- CTF — универсальный инструмент для соревнований
+
+## Ответственность
+Автор не несёт ответственности за ваши действия. Вы сами решаете как использовать этот инструмент.
 
 ## Лицензия
 MIT
